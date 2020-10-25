@@ -1,0 +1,183 @@
+--- VERIFY DOCKER INSTALLATION ---
+docker --version
+docker
+docker ps
+	if not work 'docker ps' -> sudo groupadd docker , sudo usermod -aG docker $USER, newgrp docker
+
+
+-------------------------------------------------------------------------------------------
+---DOCKER IMAGES AND CONTAINERS ---
+
+IMAGE 
+	- IS A TEMPLATE FOR CREATING AN ENVIRONMENT OF YOUR CHOICE
+	- SNAPSHOT
+	- HAS EVERYTHING NEED TO RUN UR APPS(OS, SOFTWARE, CODE)
+
+CONTAINER
+	- RUNNING INSTANCE OF AN IMAGE
+	
+--------------------------------------------------------------------------------------------
+
+--- PULLING EXISTING DOCKER IMAGES ---
+
+NGINX - WEB SERVER,REVERSE PROXY,LOAD BALANCER
+
+	docker pull nginx
+	docker images -> return local existing images
+
+----------------------------------------------------------------------------------------------
+
+--- RUN CONTAINERS FROM A IMAGE---
+
+docker run nginx:latest -> container is started, just open a new terminal check running containers.
+docker container ls / docker ps
+
+or u can run in same terminal by,
+	docker run -d nginx:latest
+	docker stop id <- stop container
+
+----------------------------------------------------------------------------------------------
+
+--- EXPOSING PORTS ---
+
+docker run -d -p 8080:80 nginx:latest
+docker run -d -p 3000:80 -p 8080:80 nginx:latest
+
+-----------------------------------------------------------------------------------------------
+
+-- MANAGING CONTAINERS ---
+
+STOP:(BUT STILL EXISTS)
+	docker stop id/name
+
+START:
+	docker start id/name
+	
+docker ps --help
+
+docker ps -a    <- all existing containers
+
+DELETE:
+	docker rm name
+	
+	TO DELETE ALL
+	
+	docker ps -aq   <- ALL NUMERIC IDS OF EXISTING CONTAINERS
+	docker rm $(docker ps -aq)
+	
+	TO DELETE RUNNING
+	
+	docker rm -f $(docker ps -aq)
+
+-----------------------------------------------------------------------------------------------
+
+--- NAMING CONTAINERS ---
+
+docker run --name website -d -p 3000:80 -p 8080:80 nginx:latest
+
+-------------------------------------------------------------------------------------------------
+
+--- DOCKER PS ---
+
+docker ps --format="ID\t{{.ID}}\nNAME\t{{.Names}}\nImage\t{{.Image}}\nPORTS\t{{.Ports}}\nCOMMAND\t{{.Command}}\nCREATED\t{{.CreatedAt}}\nSTATUS\t{{.Status}}\n"
+
+export FORMAT="ID\t{{.ID}}\nNAME\t{{.Names}}\nImage\t{{.Image}}\nPORTS\t{{.Ports}}\nCOMMAND\t{{.Command}}\nCREATED\t{{.CreatedAt}}\nSTATUS\t{{.Status}}\n"
+	
+docker ps --format=$FORMAT
+
+--------------------------------------------------------------------------------------------------
+
+--- DOCKER VLOUMES ---
+
+ALLOWS SHARING DATA, FILES AND FOLDERS
+BETWEEN HOST AND CONTAINER
+BETWEEN CONTAINERS
+
+	- CREATE A VOLUME IN CONTAINER
+	- THEN SHARE DATA
+
+------------------------------------------------------------------------------------------------------
+
+--- VOLUMES BETWEEN HOST AND CONTAINERS ---
+	
+	docker run --name some-nginx -v /some/content:/usr/share/nginx/html:ro -d nginx     READ ONLY
+	
+	RUN THIS IN FILE DIRECTORY
+	
+	docker run --name website -v $(pwd):/usr/share/nginx/html:ro -d -p 8080:80 nginx:latest   $(pwd) TAKES CURRENT WORKING DIRECTORY, SAVE HTML FILE AS index.html
+	docker run --name website -v /home/hp/Documents/Gitworkspace/docker:/usr/share/nginx/html -d -p 8080:80 nginx:latest
+	
+	
+
+TO GET IN TO RUNNING CONTAINER -> docker exec -it website bash
+TO CHECK FILES INSIDE CONTAINER -> ls -al
+
+GO TO -> cd /usr/share/nginx/html
+	ls -al -> can see mounted index.html
+	touch about.html
+	
+-------------------------------------------------------------------------------------------------------
+
+--- SHARE VLOUMES (BETWEEN CONTAINERS) ---
+
+CREATE SECOND CONTAINER
+
+	docker run --name website-copy -v /home/hp/Documents/Gitworkspace/docker:/usr/share/nginx/html -d -p 8081:80 nginx:latest
+	
+-----------------------------------------------------------------------------------------------------------
+
+--- DOCKERFILE ---(DO NOT NEED TO MOUNT VOLUME)
+
+TO BUILD OWN IMAGE CREATE DOCKER FILE IN ROOT DIRECTORY
+
+	FROM nginx:latest
+	ADD . /usr/share/nginx/html
+
+-----------------------------------------------------------------------------------------------------------
+
+--- DOCKER BUILD ---
+
+docker build --tag website:latest .
+docker run --name website -d -p 8080:80 website:latest
+
+------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+	
+	
+	
+
+
+
+
+
+
